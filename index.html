@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goniometria Pro - Allenamento</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #38bdf8;
+            --secondary: #a855f7;
+            --accent-sin: #ef4444;
+            --accent-cos: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --danger: #f43f5e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        nav {
+            background-color: var(--card-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--text-main);
+            background-color: rgba(56, 189, 248, 0.1);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Layout Main */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        /* Tabella */
+        .table-container {
+            overflow-x: auto;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+            margin-bottom: 3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        tr:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        /* Circonferenza Interattiva */
+        .interactive-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background-color: #0b1120;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .controls {
+            margin-top: 1.5rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        input[type="range"] {
+            width: 80%;
+            margin: 10px 0;
+            accent-color: var(--primary);
+        }
+
+        .info-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-box.sin-box { border-left-color: var(--accent-sin); }
+        .info-box.cos-box { border-left-color: var(--accent-cos); }
+
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        /* Area Esercizi */
+        .exercise-container {
+            background-color: var(--card-bg);
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .streak-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .streak-count {
+            font-size: 1.5rem;
+            color: #fbbf24;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .question-box {
+            font-size: 1.4rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .question-highlight {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .option-btn {
+            background-color: #0f172a;
+            color: var(--text-main);
+            border: 2px solid rgba(56, 189, 248, 0.3);
+            padding: 1rem;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .option-btn.correct {
+            background-color: rgba(34, 197, 94, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .option-btn.wrong {
+            background-color: rgba(244, 63, 94, 0.2);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .feedback-message {
+            margin-top: 2rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            min-height: 2rem;
+        }
+
+        .next-btn {
+            margin-top: 1.5rem;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: none;
+            margin-left: auto;
+            margin-right: auto;
+            transition: background-color 0.3s;
+        }
+        
+        .next-btn:hover {
+            background-color: #9333ea;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">GonioPro</div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="switchTab('teoria')">Teoria & Tabella</button>
+            <button class="nav-btn" onclick="switchTab('esercizi')">Area Esercizi</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- SEZIONE TEORIA E TABELLA -->
+        <div id="teoria" class="section active">
+            <h2>Tabella Angoli Notevoli</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Gradi (°)</th>
+                            <th>Radianti (rad)</th>
+                            <th>Seno (sin)</th>
+                            <th>Coseno (cos)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Popolato tramite JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Circonferenza Goniometrica Interattiva</h2>
+            <div class="interactive-container">
+                <div class="canvas-wrapper">
+                    <canvas id="unitCircle" width="400" height="400"></canvas>
+                    <div class="controls">
+                        <label for="angleSlider">Trascina per cambiare angolo: <span id="sliderValue">45°</span></label><br>
+                        <input type="range" id="angleSlider" min="0" max="360" value="45">
+                    </div>
+                </div>
+                <div class="info-panel">
+                    <div class="info-box">
+                        <p><strong>Angolo Attuale</strong></p>
+                        <div class="info-value" style="color: var(--primary);" id="infoAngolo">45° (π/4)</div>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                            L'angolo si forma tra l'asse X positivo e il raggio della circonferenza.
+                        </p>
+                    </div>
+                    <div class="info-box sin-box">
+                        <p><strong>Seno (Y)</strong></p>
+                        <div class="info-value" style="color: var(--accent-sin);" id="infoSin">√2/2 ≈ 0.707</div>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                            Rappresenta la proiezione del punto sull'asse verticale (ordinata).
+                        </p>
+                    </div>
+                    <div class="info-box cos-box">
+                        <p><strong>Coseno (X)</strong></p>
+                        <div class="info-value" style="color: var(--accent-cos);" id="infoCos">√2/2 ≈ 0.707</div>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                            Rappresenta la proiezione del punto sull'asse orizzontale (ascissa).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEZIONE ESERCIZI -->
+        <div id="esercizi" class="section">
+            <div class="exercise-container">
+                <div class="streak-header">
+                    <h3>Modalità Allenamento</h3>
+                    <div class="streak-count">
+                        🔥 Streak: <span id="streakCounter">0</span>
+                    </div>
+                </div>
+
+                <div id="questionContainer" class="question-box">
+                    <!-- Generato via JS -->
+                </div>
+
+                <div id="optionsContainer" class="options-grid">
+                    <!-- Generato via JS -->
+                </div>
+
+                <div id="feedbackMessage" class="feedback-message"></div>
+                <button id="nextQuestionBtn" class="next-btn" onclick="generateQuestion()">Prossima Domanda ➔</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- DATI DELLA GONIOMETRIA ---
+        const gonioData = [
+            { deg: 0, rad: "0", sin: "0", cos: "1", sinVal: 0, cosVal: 1 },
+            { deg: 30, rad: "π/6", sin: "1/2", cos: "√3/2", sinVal: 0.5, cosVal: 0.866 },
+            { deg: 45, rad: "π/4", sin: "√2/2", cos: "√2/2", sinVal: 0.707, cosVal: 0.707 },
+            { deg: 60, rad: "π/3", sin: "√3/2", cos: "1/2", sinVal: 0.866, cosVal: 0.5 },
+            { deg: 90, rad: "π/2", sin: "1", cos: "0", sinVal: 1, cosVal: 0 },
+            { deg: 120, rad: "2π/3", sin: "√3/2", cos: "-1/2", sinVal: 0.866, cosVal: -0.5 },
+            { deg: 135, rad: "3π/4", sin: "√2/2", cos: "-√2/2", sinVal: 0.707, cosVal: -0.707 },
+            { deg: 150, rad: "5π/6", sin: "1/2", cos: "-√3/2", sinVal: 0.5, cosVal: -0.866 },
+            { deg: 180, rad: "π", sin: "0", cos: "-1", sinVal: 0, cosVal: -1 },
+            { deg: 210, rad: "7π/6", sin: "-1/2", cos: "-√3/2", sinVal: -0.5, cosVal: -0.866 },
+            { deg: 225, rad: "5π/4", sin: "-√2/2", cos: "-√2/2", sinVal: -0.707, cosVal: -0.707 },
+            { deg: 240, rad: "4π/3", sin: "-√3/2", cos: "-1/2", sinVal: -0.866, cosVal: -0.5 },
+            { deg: 270, rad: "3π/2", sin: "-1", cos: "0", sinVal: -1, cosVal: 0 },
+            { deg: 300, rad: "5π/3", sin: "-√3/2", cos: "1/2", sinVal: -0.866, cosVal: 0.5 },
+            { deg: 315, rad: "7π/4", sin: "-√2/2", cos: "√2/2", sinVal: -0.707, cosVal: 0.707 },
+            { deg: 330, rad: "11π/6", sin: "-1/2", cos: "√3/2", sinVal: -0.5, cosVal: 0.866 },
+            { deg: 360, rad: "2π", sin: "0", cos: "1", sinVal: 0, cosVal: 1 }
+        ];
+
+        // --- SISTEMA DI NAVIGAZIONE ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // --- TABELLA ---
+        function populateTable() {
+            const tbody = document.getElementById('tableBody');
+            let html = '';
+            gonioData.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.deg}°</td>
+                        <td>${item.rad}</td>
+                        <td style="color: var(--accent-sin); font-weight: bold;">${item.sin}</td>
+                        <td style="color: var(--accent-cos); font-weight: bold;">${item.cos}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // --- CIRCONFERENZA INTERATTIVA (CANVAS) ---
+        const canvas = document.getElementById('unitCircle');
+        const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('angleSlider');
+        const sliderValDisplay = document.getElementById('sliderValue');
+        
+        // Elementi Info
+        const infoAngolo = document.getElementById('infoAngolo');
+        const infoSin = document.getElementById('infoSin');
+        const infoCos = document.getElementById('infoCos');
+
+        // Impostazione per schermi ad alta risoluzione (Retina)
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = 400 * dpr;
+        canvas.height = 400 * dpr;
+        ctx.scale(dpr, dpr);
+        canvas.style.width = '400px';
+        canvas.style.height = '400px';
+
+        const centerX = 200;
+        const centerY = 200;
+        const radius = 150;
+
+        function drawCircle(angleDeg) {
+            ctx.clearRect(0, 0, 400, 400);
+            
+            // Disegna Griglia / Assi
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(400, centerY);
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, 400);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Etichette assi
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '14px sans-serif';
+            ctx.fillText('X (Cos)', 350, centerY - 10);
+            ctx.fillText('Y (Sin)', centerX + 10, 20);
+
+            // Disegna Cerchio
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Calcoli coordinate
+            const angleRad = (angleDeg * Math.PI) / 180;
+            // Nel canvas la Y cresce verso il basso, quindi invertiamo il segno per il seno
+            const pX = centerX + radius * Math.cos(angleRad);
+            const pY = centerY - radius * Math.sin(angleRad);
+
+            // Disegna l'arco dell'angolo
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 30, 0, -angleRad, true);
+            ctx.strokeStyle = 'var(--primary)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Disegna Raggio
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(pX, pY);
+            ctx.strokeStyle = 'var(--text-main)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Disegna linea Coseno (X)
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(pX, centerY);
+            ctx.strokeStyle = 'var(--accent-cos)';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Disegna linea Seno (Y)
+            ctx.beginPath();
+            ctx.moveTo(pX, centerY);
+            ctx.lineTo(pX, pY);
+            ctx.strokeStyle = 'var(--accent-sin)';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Disegna il punto sulla circonferenza
+            ctx.beginPath();
+            ctx.arc(pX, pY, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = 'var(--primary)';
+            ctx.fill();
+
+            updateInfoPanel(angleDeg);
+        }
+
+        function updateInfoPanel(deg) {
+            // Cerca se è un angolo notevole per mostrare la frazione esatta, altrimenti usa i decimali
+            const exactMatch = gonioData.find(d => d.deg === parseInt(deg));
+            
+            const radForm = exactMatch ? exactMatch.rad : ((deg * Math.PI)/180).toFixed(2) + " rad";
+            const sinForm = exactMatch ? exactMatch.sin : Math.sin(deg * Math.PI/180).toFixed(3);
+            const cosForm = exactMatch ? exactMatch.cos : Math.cos(deg * Math.PI/180).toFixed(3);
+            
+            const sinDec = Math.sin(deg * Math.PI/180).toFixed(3);
+            const cosDec = Math.cos(deg * Math.PI/180).toFixed(3);
+
+            infoAngolo.innerText = `${deg}° (${radForm})`;
+            infoSin.innerText = exactMatch ? `${sinForm} ≈ ${sinDec}` : sinDec;
+            infoCos.innerText = exactMatch ? `${cosForm} ≈ ${cosDec}` : cosDec;
+        }
+
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            sliderValDisplay.innerText = val + '°';
+            drawCircle(val);
+        });
+
+
+        // --- LOGICA ESERCIZI E STREAK ---
+        let currentStreak = localStorage.getItem('gonioStreak') || 0;
+        document.getElementById('streakCounter').innerText = currentStreak;
+        let correctAnswer = null;
+
+        const propLabels = {
+            deg: "Gradi",
+            rad: "Radianti",
+            sin: "Seno",
+            cos: "Coseno"
+        };
+
+        function updateStreak(isCorrect) {
+            if (isCorrect) {
+                currentStreak++;
+            } else {
+                currentStreak = 0;
+            }
+            localStorage.setItem('gonioStreak', currentStreak);
+            document.getElementById('streakCounter').innerText = currentStreak;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateQuestion() {
+            const feedback = document.getElementById('feedbackMessage');
+            const nextBtn = document.getElementById('nextQuestionBtn');
+            const optionsContainer = document.getElementById('optionsContainer');
+            
+            feedback.innerText = "";
+            nextBtn.style.display = "none";
+            optionsContainer.innerHTML = "";
+
+            // Filtro via 360 perché è uguale a 0 e può confondere nelle risposte a scelta multipla base
+            const safeData = gonioData.filter(d => d.deg !== 360);
+
+            // Scegli un angolo target casuale
+            const targetObj = safeData[Math.floor(Math.random() * safeData.length)];
+            
+            // Scegli cosa dare e cosa chiedere
+            const properties = ['deg', 'rad', 'sin', 'cos'];
+            const givenProp = properties[Math.floor(Math.random() * properties.length)];
+            let askedProp = properties[Math.floor(Math.random() * properties.length)];
+            
+            // Assicurati che non siano la stessa cosa
+            while(askedProp === givenProp) {
+                askedProp = properties[Math.floor(Math.random() * properties.length)];
+            }
+
+            // Testo della domanda
+            const givenValue = targetObj[givenProp] + (givenProp === 'deg' ? '°' : '');
+            document.getElementById('questionContainer').innerHTML = 
+                `Sapendo che il valore in <span class="question-highlight">${propLabels[givenProp]}</span> è <span class="question-highlight">${givenValue}</span>, 
+                 qual è il corrispondente valore in <span class="question-highlight">${propLabels[askedProp]}</span>?`;
+
+            correctAnswer = targetObj[askedProp] + (askedProp === 'deg' ? '°' : '');
+
+            // Genera le opzioni (1 giusta, 3 sbagliate uniche)
+            let options = new Set();
+            options.add(correctAnswer);
+
+            while(options.size < 4) {
+                let randomWrongObj = safeData[Math.floor(Math.random() * safeData.length)];
+                let wrongVal = randomWrongObj[askedProp] + (askedProp === 'deg' ? '°' : '');
+                options.add(wrongVal);
+            }
+
+            const shuffledOptions = shuffleArray(Array.from(options));
+
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedOpt, btnElement) {
+            // Disabilita tutti i bottoni
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('feedbackMessage');
+
+            if (selectedOpt === correctAnswer) {
+                btnElement.classList.add('correct');
+                feedback.innerText = "Giusto! 🎉";
+                feedback.style.color = "var(--success)";
+                updateStreak(true);
+                
+                // Vai alla prossima automaticamente dopo poco tempo
+                setTimeout(generateQuestion, 1200);
+            } else {
+                btnElement.classList.add('wrong');
+                feedback.innerHTML = `Sbagliato 😕. La risposta corretta era: <strong>${correctAnswer}</strong>`;
+                feedback.style.color = "var(--danger)";
+                updateStreak(false);
+                
+                // Evidenzia quella giusta
+                allBtns.forEach(b => {
+                    if(b.innerText === correctAnswer) b.classList.add('correct');
+                });
+
+                // Mostra bottone per continuare
+                document.getElementById('nextQuestionBtn').style.display = "block";
+            }
+        }
+
+        // --- INIZIALIZZAZIONE ---
+        window.onload = () => {
+            populateTable();
+            drawCircle(45); // Angolo iniziale
+            generateQuestion();
+        };
+    </script>
+</body>
+</html>
