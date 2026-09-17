@@ -12,6 +12,146 @@
             --secondary: #a855f7;
             --accent-sin: #ef4444;
             --accent-cos: #10b981;
+            --accent-tan: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --danger: #f43f5e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        nav {
+            background-color: var(--card-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--text-main);
+            background-color: rgba(56, 189, 248, 0.1);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Layout Main */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        /* Tabella */
+        .table-container {
+            overflow-x: auto;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+            margin-bottom: 3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        tr:hover {
+            background-color: rgba(255,2```html
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goniometria Pro - Allenamento</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #38bdf8;
+            --secondary: #a855f7;
+            --accent-sin: #ef4444;
+            --accent-cos: #10b981;
+            --accent-tan: #f59e0b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --success: #22c55e;
@@ -190,6 +330,7 @@
 
         .info-box.sin-box { border-left-color: var(--accent-sin); }
         .info-box.cos-box { border-left-color: var(--accent-cos); }
+        .info-box.tan-box { border-left-color: var(--accent-tan); }
 
         .info-value {
             font-size: 1.8rem;
@@ -198,15 +339,16 @@
         }
 
         /* Area Esercizi */
-        .exercise-container {
+        .exercise-container, .settings-container {
             background-color: var(--card-bg);
             padding: 3rem 2rem;
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
-            text-align: center;
             max-width: 800px;
             margin: 0 auto;
         }
+
+        .exercise-container { text-align: center; }
 
         .streak-header {
             display: flex;
@@ -236,9 +378,15 @@
             font-weight: bold;
         }
 
+        #exerciseCanvasContainer {
+            display: none;
+            margin: 1.5rem auto;
+            text-align: center;
+        }
+
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1rem;
         }
 
@@ -253,7 +401,7 @@
             transition: all 0.2s ease;
         }
 
-        .option-btn:hover {
+        .option-btn:hover:not(:disabled) {
             background-color: rgba(56, 189, 248, 0.1);
             border-color: var(--primary);
             transform: scale(1.02);
@@ -283,7 +431,7 @@
             min-height: 2rem;
         }
 
-        .next-btn {
+        .next-btn, .save-btn {
             margin-top: 1.5rem;
             background-color: var(--secondary);
             color: white;
@@ -292,15 +440,77 @@
             font-size: 1.1rem;
             border-radius: 8px;
             cursor: pointer;
-            display: none;
-            margin-left: auto;
-            margin-right: auto;
             transition: background-color 0.3s;
         }
         
-        .next-btn:hover {
+        .next-btn {
+            display: none;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .next-btn:hover, .save-btn:hover {
             background-color: #9333ea;
         }
+
+        /* Impostazioni */
+        .settings-group {
+            margin-bottom: 2rem;
+        }
+
+        .settings-group h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            background-color: #0f172a;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: border-color 0.2s;
+        }
+
+        .setting-label:hover {
+            border-color: var(--primary);
+        }
+
+        .setting-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        select.setting-input {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #0f172a;
+            color: var(--text-main);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            font-size: 1.1rem;
+        }
+
+        select.setting-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
     </style>
 </head>
 <body>
@@ -308,8 +518,9 @@
     <nav>
         <div class="logo">GonioPro</div>
         <div class="nav-links">
-            <button class="nav-btn active" onclick="switchTab('teoria')">Teoria & Tabella</button>
-            <button class="nav-btn" onclick="switchTab('esercizi')">Area Esercizi</button>
+            <button class="nav-btn active" onclick="switchTab('teoria')">Teoria</button>
+            <button class="nav-btn" onclick="switchTab('esercizi')">Esercizi</button>
+            <button class="nav-btn" onclick="switchTab('impostazioni')">Impostazioni</button>
         </div>
     </nav>
 
@@ -325,6 +536,7 @@
                             <th>Radianti (rad)</th>
                             <th>Seno (sin)</th>
                             <th>Coseno (cos)</th>
+                            <th>Tangente (tan)</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -346,23 +558,18 @@
                     <div class="info-box">
                         <p><strong>Angolo Attuale</strong></p>
                         <div class="info-value" style="color: var(--primary);" id="infoAngolo">45° (π/4)</div>
-                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                            L'angolo si forma tra l'asse X positivo e il raggio della circonferenza.
-                        </p>
                     </div>
                     <div class="info-box sin-box">
                         <p><strong>Seno (Y)</strong></p>
                         <div class="info-value" style="color: var(--accent-sin);" id="infoSin">√2/2 ≈ 0.707</div>
-                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                            Rappresenta la proiezione del punto sull'asse verticale (ordinata).
-                        </p>
                     </div>
                     <div class="info-box cos-box">
                         <p><strong>Coseno (X)</strong></p>
                         <div class="info-value" style="color: var(--accent-cos);" id="infoCos">√2/2 ≈ 0.707</div>
-                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                            Rappresenta la proiezione del punto sull'asse orizzontale (ascissa).
-                        </p>
+                    </div>
+                    <div class="info-box tan-box">
+                        <p><strong>Tangente (sin/cos)</strong></p>
+                        <div class="info-value" style="color: var(--accent-tan);" id="infoTan">1</div>
                     </div>
                 </div>
             </div>
@@ -378,6 +585,10 @@
                     </div>
                 </div>
 
+                <div id="exerciseCanvasContainer">
+                    <canvas id="exerciseCircle" width="250" height="250"></canvas>
+                </div>
+
                 <div id="questionContainer" class="question-box">
                     <!-- Generato via JS -->
                 </div>
@@ -390,29 +601,121 @@
                 <button id="nextQuestionBtn" class="next-btn" onclick="generateQuestion()">Prossima Domanda ➔</button>
             </div>
         </div>
+
+        <!-- SEZIONE IMPOSTAZIONI -->
+        <div id="impostazioni" class="section">
+            <div class="settings-container">
+                <h2>Setting Esercizi</h2>
+                
+                <div class="settings-group">
+                    <h3>Argomenti Abilitati</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Seleziona quali valori vuoi che vengano inclusi nelle domande o nelle risposte.</p>
+                    <div class="checkbox-grid">
+                        <label class="setting-label">
+                            <input type="checkbox" id="set-deg" checked> Gradi
+                        </label>
+                        <label class="setting-label">
+                            <input type="checkbox" id="set-rad" checked> Radianti
+                        </label>
+                        <label class="setting-label">
+                            <input type="checkbox" id="set-sin" checked> Seno
+                        </label>
+                        <label class="setting-label">
+                            <input type="checkbox" id="set-cos" checked> Coseno
+                        </label>
+                        <label class="setting-label">
+                            <input type="checkbox" id="set-tan" checked> Tangente
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3>Difficoltà & Formato</h3>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--primary);">Numero di scelte multiple:</label>
+                        <select id="set-options-count" class="setting-input">
+                            <option value="2">2 Opzioni</option>
+                            <option value="3">3 Opzioni</option>
+                            <option value="4" selected>4 Opzioni</option>
+                            <option value="5">5 Opzioni</option>
+                            <option value="6">6 Opzioni</option>
+                        </select>
+                    </div>
+                    
+                    <div class="checkbox-grid">
+                        <label class="setting-label">
+                            <input type="checkbox" id="set-visual" checked> Includi esercizi grafici (Circonferenza)
+                        </label>
+                    </div>
+                </div>
+
+                <button class="save-btn" onclick="saveSettings()">Salva e Inizia ad Allenarti</button>
+                <div id="settingsFeedback" style="color: var(--success); margin-top: 1rem; font-weight: bold; display: none;">Impostazioni Salvate!</div>
+            </div>
+        </div>
     </main>
 
     <script>
         // --- DATI DELLA GONIOMETRIA ---
         const gonioData = [
-            { deg: 0, rad: "0", sin: "0", cos: "1", sinVal: 0, cosVal: 1 },
-            { deg: 30, rad: "π/6", sin: "1/2", cos: "√3/2", sinVal: 0.5, cosVal: 0.866 },
-            { deg: 45, rad: "π/4", sin: "√2/2", cos: "√2/2", sinVal: 0.707, cosVal: 0.707 },
-            { deg: 60, rad: "π/3", sin: "√3/2", cos: "1/2", sinVal: 0.866, cosVal: 0.5 },
-            { deg: 90, rad: "π/2", sin: "1", cos: "0", sinVal: 1, cosVal: 0 },
-            { deg: 120, rad: "2π/3", sin: "√3/2", cos: "-1/2", sinVal: 0.866, cosVal: -0.5 },
-            { deg: 135, rad: "3π/4", sin: "√2/2", cos: "-√2/2", sinVal: 0.707, cosVal: -0.707 },
-            { deg: 150, rad: "5π/6", sin: "1/2", cos: "-√3/2", sinVal: 0.5, cosVal: -0.866 },
-            { deg: 180, rad: "π", sin: "0", cos: "-1", sinVal: 0, cosVal: -1 },
-            { deg: 210, rad: "7π/6", sin: "-1/2", cos: "-√3/2", sinVal: -0.5, cosVal: -0.866 },
-            { deg: 225, rad: "5π/4", sin: "-√2/2", cos: "-√2/2", sinVal: -0.707, cosVal: -0.707 },
-            { deg: 240, rad: "4π/3", sin: "-√3/2", cos: "-1/2", sinVal: -0.866, cosVal: -0.5 },
-            { deg: 270, rad: "3π/2", sin: "-1", cos: "0", sinVal: -1, cosVal: 0 },
-            { deg: 300, rad: "5π/3", sin: "-√3/2", cos: "1/2", sinVal: -0.866, cosVal: 0.5 },
-            { deg: 315, rad: "7π/4", sin: "-√2/2", cos: "√2/2", sinVal: -0.707, cosVal: 0.707 },
-            { deg: 330, rad: "11π/6", sin: "-1/2", cos: "√3/2", sinVal: -0.5, cosVal: 0.866 },
-            { deg: 360, rad: "2π", sin: "0", cos: "1", sinVal: 0, cosVal: 1 }
+            { deg: 0, rad: "0", sin: "0", cos: "1", tan: "0" },
+            { deg: 30, rad: "π/6", sin: "1/2", cos: "√3/2", tan: "√3/3" },
+            { deg: 45, rad: "π/4", sin: "√2/2", cos: "√2/2", tan: "1" },
+            { deg: 60, rad: "π/3", sin: "√3/2", cos: "1/2", tan: "√3" },
+            { deg: 90, rad: "π/2", sin: "1", cos: "0", tan: "N.E." },
+            { deg: 120, rad: "2π/3", sin: "√3/2", cos: "-1/2", tan: "-√3" },
+            { deg: 135, rad: "3π/4", sin: "√2/2", cos: "-√2/2", tan: "-1" },
+            { deg: 150, rad: "5π/6", sin: "1/2", cos: "-√3/2", tan: "-√3/3" },
+            { deg: 180, rad: "π", sin: "0", cos: "-1", tan: "0" },
+            { deg: 210, rad: "7π/6", sin: "-1/2", cos: "-√3/2", tan: "√3/3" },
+            { deg: 225, rad: "5π/4", sin: "-√2/2", cos: "-√2/2", tan: "1" },
+            { deg: 240, rad: "4π/3", sin: "-√3/2", cos: "-1/2", tan: "√3" },
+            { deg: 270, rad: "3π/2", sin: "-1", cos: "0", tan: "N.E." },
+            { deg: 300, rad: "5π/3", sin: "-√3/2", cos: "1/2", tan: "-√3" },
+            { deg: 315, rad: "7π/4", sin: "-√2/2", cos: "√2/2", tan: "-1" },
+            { deg: 330, rad: "11π/6", sin: "-1/2", cos: "√3/2", tan: "-√3/3" },
+            { deg: 360, rad: "2π", sin: "0", cos: "1", tan: "0" }
         ];
+
+        const propLabels = {
+            deg: "Gradi",
+            rad: "Radianti",
+            sin: "Seno",
+            cos: "Coseno",
+            tan: "Tangente"
+        };
+
+        // --- GESTIONE IMPOSTAZIONI ---
+        let currentSettings = {
+            props: ['deg', 'rad', 'sin', 'cos', 'tan'],
+            numOptions: 4,
+            useVisual: true
+        };
+
+        function saveSettings() {
+            const props = [];
+            if(document.getElementById('set-deg').checked) props.push('deg');
+            if(document.getElementById('set-rad').checked) props.push('rad');
+            if(document.getElementById('set-sin').checked) props.push('sin');
+            if(document.getElementById('set-cos').checked) props.push('cos');
+            if(document.getElementById('set-tan').checked) props.push('tan');
+
+            // Fallback se l'utente deseleziona tutto
+            if(props.length < 2) {
+                alert("Devi selezionare almeno 2 argomenti per poter generare le domande!");
+                return;
+            }
+
+            currentSettings.props = props;
+            currentSettings.numOptions = parseInt(document.getElementById('set-options-count').value);
+            currentSettings.useVisual = document.getElementById('set-visual').checked;
+
+            const feedback = document.getElementById('settingsFeedback');
+            feedback.style.display = 'block';
+            setTimeout(() => { feedback.style.display = 'none'; switchTab('esercizi'); }, 1000);
+            
+            generateQuestion(); // Rigenera con le nuove impostazioni
+        }
 
         // --- SISTEMA DI NAVIGAZIONE ---
         function switchTab(tabId) {
@@ -420,7 +723,10 @@
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            
+            // Attiva il bottone navbar corretto
+            const tabMap = { 'teoria': 0, 'esercizi': 1, 'impostazioni': 2 };
+            document.querySelectorAll('.nav-btn')[tabMap[tabId]].classList.add('active');
         }
 
         // --- TABELLA ---
@@ -434,76 +740,63 @@
                         <td>${item.rad}</td>
                         <td style="color: var(--accent-sin); font-weight: bold;">${item.sin}</td>
                         <td style="color: var(--accent-cos); font-weight: bold;">${item.cos}</td>
+                        <td style="color: var(--accent-tan); font-weight: bold;">${item.tan}</td>
                     </tr>
                 `;
             });
             tbody.innerHTML = html;
         }
 
-        // --- CIRCONFERENZA INTERATTIVA (CANVAS) ---
-        const canvas = document.getElementById('unitCircle');
-        const ctx = canvas.getContext('2d');
-        const slider = document.getElementById('angleSlider');
-        const sliderValDisplay = document.getElementById('sliderValue');
-        
-        // Elementi Info
-        const infoAngolo = document.getElementById('infoAngolo');
-        const infoSin = document.getElementById('infoSin');
-        const infoCos = document.getElementById('infoCos');
+        // --- CIRCONFERENZA INTERATTIVA ---
+        const setupCanvas = (canvasId, size) => {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = size * dpr;
+            canvas.height = size * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+            return { canvas, ctx, size };
+        };
 
-        // Impostazione per schermi ad alta risoluzione (Retina)
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = 400 * dpr;
-        canvas.height = 400 * dpr;
-        ctx.scale(dpr, dpr);
-        canvas.style.width = '400px';
-        canvas.style.height = '400px';
+        const mainCanvasInfo = setupCanvas('unitCircle', 400);
+        const exCanvasInfo = setupCanvas('exerciseCircle', 250);
 
-        const centerX = 200;
-        const centerY = 200;
-        const radius = 150;
+        function drawCircleCore(ctx, size, angleDeg, drawLines = true) {
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = size * 0.35; // Scala raggio
 
-        function drawCircle(angleDeg) {
-            ctx.clearRect(0, 0, 400, 400);
+            ctx.clearRect(0, 0, size, size);
             
-            // Disegna Griglia / Assi
+            // Assi
             ctx.beginPath();
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(400, centerY);
-            ctx.moveTo(centerX, 0);
-            ctx.lineTo(centerX, 400);
+            ctx.moveTo(0, centerY); ctx.lineTo(size, centerY);
+            ctx.moveTo(centerX, 0); ctx.lineTo(centerX, size);
             ctx.strokeStyle = '#334155';
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Etichette assi
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '14px sans-serif';
-            ctx.fillText('X (Cos)', 350, centerY - 10);
-            ctx.fillText('Y (Sin)', centerX + 10, 20);
-
-            // Disegna Cerchio
+            // Cerchio
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
             ctx.strokeStyle = '#475569';
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Calcoli coordinate
             const angleRad = (angleDeg * Math.PI) / 180;
-            // Nel canvas la Y cresce verso il basso, quindi invertiamo il segno per il seno
             const pX = centerX + radius * Math.cos(angleRad);
             const pY = centerY - radius * Math.sin(angleRad);
 
-            // Disegna l'arco dell'angolo
+            // Arco Angolo
             ctx.beginPath();
-            ctx.arc(centerX, centerY, 30, 0, -angleRad, true);
+            ctx.arc(centerX, centerY, radius * 0.2, 0, -angleRad, true);
             ctx.strokeStyle = 'var(--primary)';
             ctx.lineWidth = 3;
             ctx.stroke();
 
-            // Disegna Raggio
+            // Raggio
             ctx.beginPath();
             ctx.moveTo(centerX, centerY);
             ctx.lineTo(pX, pY);
@@ -511,72 +804,66 @@
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Disegna linea Coseno (X)
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(pX, centerY);
-            ctx.strokeStyle = 'var(--accent-cos)';
-            ctx.lineWidth = 4;
-            ctx.stroke();
+            if(drawLines) {
+                // Coseno
+                ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(pX, centerY);
+                ctx.strokeStyle = 'var(--accent-cos)'; ctx.lineWidth = 3; ctx.stroke();
+                // Seno
+                ctx.beginPath(); ctx.moveTo(pX, centerY); ctx.lineTo(pX, pY);
+                ctx.strokeStyle = 'var(--accent-sin)'; ctx.lineWidth = 3; ctx.stroke();
+            }
 
-            // Disegna linea Seno (Y)
+            // Punto
             ctx.beginPath();
-            ctx.moveTo(pX, centerY);
-            ctx.lineTo(pX, pY);
-            ctx.strokeStyle = 'var(--accent-sin)';
-            ctx.lineWidth = 4;
-            ctx.stroke();
-
-            // Disegna il punto sulla circonferenza
-            ctx.beginPath();
-            ctx.arc(pX, pY, 6, 0, 2 * Math.PI);
+            ctx.arc(pX, pY, 5, 0, 2 * Math.PI);
             ctx.fillStyle = 'var(--primary)';
             ctx.fill();
+        }
 
+        function drawMainCircle(angleDeg) {
+            drawCircleCore(mainCanvasInfo.ctx, mainCanvasInfo.size, angleDeg, true);
             updateInfoPanel(angleDeg);
         }
 
+        function drawExerciseCircle(angleDeg) {
+            drawCircleCore(exCanvasInfo.ctx, exCanvasInfo.size, angleDeg, false);
+        }
+
         function updateInfoPanel(deg) {
-            // Cerca se è un angolo notevole per mostrare la frazione esatta, altrimenti usa i decimali
             const exactMatch = gonioData.find(d => d.deg === parseInt(deg));
             
             const radForm = exactMatch ? exactMatch.rad : ((deg * Math.PI)/180).toFixed(2) + " rad";
             const sinForm = exactMatch ? exactMatch.sin : Math.sin(deg * Math.PI/180).toFixed(3);
             const cosForm = exactMatch ? exactMatch.cos : Math.cos(deg * Math.PI/180).toFixed(3);
             
-            const sinDec = Math.sin(deg * Math.PI/180).toFixed(3);
-            const cosDec = Math.cos(deg * Math.PI/180).toFixed(3);
+            let tanForm = "N.E.";
+            let tanDec = "N.E.";
+            if(deg % 180 !== 90) {
+                tanDec = Math.tan(deg * Math.PI/180).toFixed(3);
+                tanForm = exactMatch ? exactMatch.tan : tanDec;
+            }
 
-            infoAngolo.innerText = `${deg}° (${radForm})`;
-            infoSin.innerText = exactMatch ? `${sinForm} ≈ ${sinDec}` : sinDec;
-            infoCos.innerText = exactMatch ? `${cosForm} ≈ ${cosDec}` : cosDec;
+            document.getElementById('infoAngolo').innerText = `${deg}° (${radForm})`;
+            document.getElementById('infoSin').innerText = exactMatch ? `${sinForm}` : sinForm;
+            document.getElementById('infoCos').innerText = exactMatch ? `${cosForm}` : cosForm;
+            document.getElementById('infoTan').innerText = exactMatch ? `${tanForm}` : tanForm;
         }
 
-        slider.addEventListener('input', (e) => {
+        document.getElementById('angleSlider').addEventListener('input', (e) => {
             const val = e.target.value;
-            sliderValDisplay.innerText = val + '°';
-            drawCircle(val);
+            document.getElementById('sliderValue').innerText = val + '°';
+            drawMainCircle(val);
         });
 
 
-        // --- LOGICA ESERCIZI E STREAK ---
+        // --- LOGICA ESERCIZI ---
         let currentStreak = localStorage.getItem('gonioStreak') || 0;
         document.getElementById('streakCounter').innerText = currentStreak;
         let correctAnswer = null;
 
-        const propLabels = {
-            deg: "Gradi",
-            rad: "Radianti",
-            sin: "Seno",
-            cos: "Coseno"
-        };
-
         function updateStreak(isCorrect) {
-            if (isCorrect) {
-                currentStreak++;
-            } else {
-                currentStreak = 0;
-            }
+            if (isCorrect) currentStreak++;
+            else currentStreak = 0;
             localStorage.setItem('gonioStreak', currentStreak);
             document.getElementById('streakCounter').innerText = currentStreak;
         }
@@ -593,40 +880,49 @@
             const feedback = document.getElementById('feedbackMessage');
             const nextBtn = document.getElementById('nextQuestionBtn');
             const optionsContainer = document.getElementById('optionsContainer');
+            const questionContainer = document.getElementById('questionContainer');
+            const canvasContainer = document.getElementById('exerciseCanvasContainer');
             
             feedback.innerText = "";
             nextBtn.style.display = "none";
             optionsContainer.innerHTML = "";
+            canvasContainer.style.display = "none";
 
-            // Filtro via 360 perché è uguale a 0 e può confondere nelle risposte a scelta multipla base
             const safeData = gonioData.filter(d => d.deg !== 360);
-
-            // Scegli un angolo target casuale
             const targetObj = safeData[Math.floor(Math.random() * safeData.length)];
             
-            // Scegli cosa dare e cosa chiedere
-            const properties = ['deg', 'rad', 'sin', 'cos'];
-            const givenProp = properties[Math.floor(Math.random() * properties.length)];
-            let askedProp = properties[Math.floor(Math.random() * properties.length)];
+            const props = currentSettings.props;
+            let askedProp = props[Math.floor(Math.random() * props.length)];
             
-            // Assicurati che non siano la stessa cosa
-            while(askedProp === givenProp) {
-                askedProp = properties[Math.floor(Math.random() * properties.length)];
-            }
+            // Decidi il formato (Testuale vs Grafico)
+            const isVisual = currentSettings.useVisual && Math.random() < 0.35; // 35% di probabilità se abilitato
 
-            // Testo della domanda
-            const givenValue = targetObj[givenProp] + (givenProp === 'deg' ? '°' : '');
-            document.getElementById('questionContainer').innerHTML = 
-                `Sapendo che il valore in <span class="question-highlight">${propLabels[givenProp]}</span> è <span class="question-highlight">${givenValue}</span>, 
-                 qual è il corrispondente valore in <span class="question-highlight">${propLabels[askedProp]}</span>?`;
+            if (isVisual) {
+                // Domanda Grafica
+                canvasContainer.style.display = "block";
+                drawExerciseCircle(targetObj.deg);
+                
+                questionContainer.innerHTML = `Osserva l'angolo evidenziato sulla circonferenza. Qual è il suo valore in <span class="question-highlight">${propLabels[askedProp]}</span>?`;
+            } else {
+                // Domanda Testuale
+                let givenProp = props[Math.floor(Math.random() * props.length)];
+                while(askedProp === givenProp) {
+                    givenProp = props[Math.floor(Math.random() * props.length)];
+                }
+                const givenValue = targetObj[givenProp] + (givenProp === 'deg' ? '°' : '');
+                
+                questionContainer.innerHTML = 
+                    `Sapendo che il valore in <span class="question-highlight">${propLabels[givenProp]}</span> è <span class="question-highlight">${givenValue}</span>, 
+                     qual è il corrispondente valore in <span class="question-highlight">${propLabels[askedProp]}</span>?`;
+            }
 
             correctAnswer = targetObj[askedProp] + (askedProp === 'deg' ? '°' : '');
 
-            // Genera le opzioni (1 giusta, 3 sbagliate uniche)
+            // Genera le opzioni
             let options = new Set();
             options.add(correctAnswer);
 
-            while(options.size < 4) {
+            while(options.size < currentSettings.numOptions) {
                 let randomWrongObj = safeData[Math.floor(Math.random() * safeData.length)];
                 let wrongVal = randomWrongObj[askedProp] + (askedProp === 'deg' ? '°' : '');
                 options.add(wrongVal);
@@ -644,7 +940,6 @@
         }
 
         function checkAnswer(selectedOpt, btnElement) {
-            // Disabilita tutti i bottoni
             const allBtns = document.querySelectorAll('.option-btn');
             allBtns.forEach(b => b.disabled = true);
 
@@ -655,21 +950,17 @@
                 feedback.innerText = "Giusto! 🎉";
                 feedback.style.color = "var(--success)";
                 updateStreak(true);
-                
-                // Vai alla prossima automaticamente dopo poco tempo
-                setTimeout(generateQuestion, 1200);
+                setTimeout(generateQuestion, 1500);
             } else {
                 btnElement.classList.add('wrong');
                 feedback.innerHTML = `Sbagliato 😕. La risposta corretta era: <strong>${correctAnswer}</strong>`;
                 feedback.style.color = "var(--danger)";
                 updateStreak(false);
                 
-                // Evidenzia quella giusta
                 allBtns.forEach(b => {
                     if(b.innerText === correctAnswer) b.classList.add('correct');
                 });
 
-                // Mostra bottone per continuare
                 document.getElementById('nextQuestionBtn').style.display = "block";
             }
         }
@@ -677,7 +968,7 @@
         // --- INIZIALIZZAZIONE ---
         window.onload = () => {
             populateTable();
-            drawCircle(45); // Angolo iniziale
+            drawMainCircle(45);
             generateQuestion();
         };
     </script>
